@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>A Tale of Two Cities: Jeopardy</title>
+  <!-- Include a Victorian‐style font from Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
+  <style>
+    /* Global Styles */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Georgia', serif;
+      background: #fdfaf3;
+      color: #333;
+    }
+    h1, h2, h3 {
+      margin: 10px 0;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      border: 2px solid #333;
+      background: #fff;
+    }
+    .active {
+      display: block;
+    }
+    .menu, .setup, .board, .modal, .overlay, .finalJeopardy, .victoryScreen {
+      display: none;
+    }
+    
+    /* ---------- MAIN MENU ---------- */
+    #mainMenu {
+      min-height: 100vh;
+      background: url('images/paris_london.jpg') no-repeat center center fixed;
+      background-size: cover;
+      padding-top: 80px;
+      text-align: center;
+      color: #fff;
+      text-shadow: 2px 2px 4px #000;
+    }
+    #mainMenu h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 3em;
+      margin-bottom: 30px;
+    }
+    
+    /* ---------- SETUP MENU ---------- */
+    #setupMenu {
+      background: url('images/parchment.jpg') no-repeat center center;
+      background-size: cover;
+      padding: 40px;
+      min-height: 100vh;
+    }
+    #setupMenu h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+    /* Team selection panel styled like an old wax seal */
+    .team-input {
+      display: inline-block;
+      margin: 10px;
+      padding: 10px;
+      border: 3px solid #a67c52;
+      border-radius: 50%;
+      background: url('images/wax_seal.png') no-repeat center;
+      background-size: contain;
+    }
+    .team-input input[type="text"] {
+      border: none;
+      background: transparent;
+      text-align: center;
+      font-weight: bold;
+    }
+    .team-input input[type="color"] {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    
+    /* ---------- GAME BOARD ---------- */
+    #gameBoard {
+      padding: 20px;
+      min-height: 100vh;
+      background: #fdfaf3;
+    }
+    /* Scoreboard styled as an old chalkboard */
+    #scoreboard {
+      background: #333;
+      color: #fff;
+      font-family: 'Courier New', monospace;
+      padding: 15px;
+      border: 5px solid #222;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+    /* Game board table mimics an old wooden tavern sign with gold-trimmed edges */
+    table {
+      width: 90%;
+      margin: 0 auto;
+      border-collapse: collapse;
+      border: 8px solid gold;
+      background: url('images/wood.jpg') no-repeat center center;
+      background-size: cover;
+    }
+    th, td {
+      border: 2px solid #333;
+      padding: 15px;
+      text-align: center;
+      background: rgba(255,255,204,0.9);
+    }
+    th {
+      background: #d1bfa7;
+      font-size: 1.2em;
+    }
+    td button {
+      width: 100%;
+      height: 100%;
+      font-size: 1.1em;
+      background: #ffc;
+      border: none;
+      cursor: pointer;
+    }
+    td button:disabled {
+      background: #bbb;
+      cursor: default;
+    }
+    
+    /* ---------- QUESTION MODAL (and Daily Double) ---------- */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      z-index: 1000;
+    }
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 90%;
+      max-width: 500px;
+      background: url('images/parchment.jpg') no-repeat center center;
+      background-size: cover;
+      padding: 30px;
+      transform: translate(-50%, -50%);
+      border: 5px solid #8B4513;
+      z-index: 1100;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+    /* If a question is a Daily Double, add a red glow */
+    .daily-double {
+      border-color: red;
+      animation: flash 1s infinite alternate;
+    }
+    @keyframes flash {
+      from { box-shadow: 0 0 10px red; }
+      to { box-shadow: 0 0 30px red; }
+    }
+    #questionContent h2 {
+      font-family: 'Cinzel', serif;
+    }
+    #answerContent p {
+      font-size: 1.2em;
+    }
+    /* Team selection buttons in modal */
+    #teamButtonsContainer button {
+      padding: 5px 10px;
+      margin: 5px;
+      border: 2px solid #333;
+      cursor: pointer;
+    }
+    #teamButtonsContainer button.selected {
+      border: 3px solid #000;
+      transform: scale(1.1);
+    }
+    
+    /* ---------- FINAL JEOPARDY MODAL ---------- */
+    .finalJeopardy {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('images/bastille.jpg') no-repeat center center;
+      background-size: cover;
+      z-index: 1200;
+      color: #fff;
+      text-shadow: 2px 2px 4px #000;
+      padding: 40px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    .finalJeopardy h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+    
+    /* ---------- VICTORY SCREEN ---------- */
+    .victoryScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('images/victory.jpg') no-repeat center center;
+      background-size: cover;
+      z-index: 1300;
+      color: #fff;
+      text-shadow: 2px 2px 4px #000;
+      padding: 40px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    .victoryScreen h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 3em;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- ---------- MAIN MENU ---------- -->
+  <div id="mainMenu" class="menu active">
+    <h1>A Tale of Two Cities: Jeopardy</h1>
+    <button id="startGameBtn">Start Game</button>
+    <button id="instructionsBtn">Instructions</button>
+    <button id="creditsBtn">Credits</button>
+    <button id="exitBtn">Exit</button>
+  </div>
+  
+  <!-- Instructions Modal -->
+  <div id="instructionsModal" class="overlay">
+    <div class="modal">
+      <h2>Instructions</h2>
+      <p>
+        Welcome to Jeopardy themed to <em>A Tale of Two Cities</em>!<br>
+        • Click "Start Game" to choose the number of teams and enter team names/colors.<br>
+        • On the board, click a point value tile to reveal a question on a parchment scroll.<br>
+        • First, the question is shown alone – click “Next” to reveal the answer and team selection.<br>
+        • Then, choose the team that buzzed in and click “Correct Answer” or “Incorrect Answer” to update scores.<br>
+        • (A Daily Double will appear randomly with a wagering option.)<br>
+        • Final Jeopardy is triggered after all questions have been answered.
+      </p>
+      <button onclick="closeModal('instructionsModal')">Close</button>
+    </div>
+  </div>
+  
+  <!-- Credits Modal -->
+  <div id="creditsModal" class="overlay">
+    <div class="modal">
+      <h2>Credits</h2>
+      <p>
+        Developed by [Your Name Here].<br>
+        Inspired by Charles Dickens' <em>A Tale of Two Cities</em>.
+      </p>
+      <button onclick="closeModal('creditsModal')">Close</button>
+    </div>
+  </div>
+  
+  <!-- ---------- SETUP MENU ---------- -->
+  <div id="setupMenu" class="setup">
+    <h2>Choose Number of Teams</h2>
+    <label for="teamCount">Number of Teams:</label>
+    <select id="teamCount">
+      <option value="2">2 Teams</option>
+      <option value="3">3 Teams</option>
+      <option value="4">4 Teams</option>
+    </select>
+    <div id="teamsContainer">
+      <div class="team-input" id="team1Input">
+        <input type="text" id="team1Name" placeholder="Team 1 Name" value="Team 1">
+        <input type="color" id="team1Color" value="#FF0000">
+      </div>
+      <div class="team-input" id="team2Input">
+        <input type="text" id="team2Name" placeholder="Team 2 Name" value="Team 2">
+        <input type="color" id="team2Color" value="#0000FF">
+      </div>
+      <div class="team-input" id="team3Input" style="display: none;">
+        <input type="text" id="team3Name" placeholder="Team 3 Name" value="Team 3">
+        <input type="color" id="team3Color" value="#008000">
+      </div>
+      <div class="team-input" id="team4Input" style="display: none;">
+        <input type="text" id="team4Name" placeholder="Team 4 Name" value="Team 4">
+        <input type="color" id="team4Color" value="#FFA500">
+      </div>
+    </div>
+    <button id="continueBtn">Continue</button>
+    <button onclick="showScreen('mainMenu')">Back to Main Menu</button>
+  </div>
+  
+  <!-- ---------- GAME BOARD ---------- -->
+  <div id="gameBoard" class="board">
+    <div id="scoreboard"></div>
+    <table>
+      <thead>
+        <tr>
+          <th>Characters of Two Cities</th>
+          <th>Revolution &amp; History</th>
+          <th>Famous Quotes</th>
+          <th>Plot Twists &amp; Turns</th>
+          <th>Symbolism &amp; Themes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Five rows: 500, 400, 300, 200, 100 -->
+        <!-- For demonstration, one question (Plot Twists & Turns, 400) is marked as a Daily Double -->
+        <tr>
+          <td><button data-category="Characters of Two Cities" data-value="500">500</button></td>
+          <td><button data-category="Revolution & History" data-value="500">500</button></td>
+          <td><button data-category="Famous Quotes" data-value="500">500</button></td>
+          <td><button data-category="Plot Twists & Turns" data-value="500">500</button></td>
+          <td><button data-category="Symbolism & Themes" data-value="500">500</button></td>
+        </tr>
+        <tr>
+          <td><button data-category="Characters of Two Cities" data-value="400">400</button></td>
+          <td><button data-category="Revolution & History" data-value="400">400</button></td>
+          <td><button data-category="Famous Quotes" data-value="400">400</button></td>
+          <td><button data-category="Plot Twists & Turns" data-value="400" data-dailydouble="true">400</button></td>
+          <td><button data-category="Symbolism & Themes" data-value="400">400</button></td>
+        </tr>
+        <tr>
+          <td><button data-category="Characters of Two Cities" data-value="300">300</button></td>
+          <td><button data-category="Revolution & History" data-value="300">300</button></td>
+          <td><button data-category="Famous Quotes" data-value="300">300</button></td>
+          <td><button data-category="Plot Twists & Turns" data-value="300">300</button></td>
+          <td><button data-category="Symbolism & Themes" data-value="300">300</button></td>
+        </tr>
+        <tr>
+          <td><button data-category="Characters of Two Cities" data-value="200">200</button></td>
+          <td><button data-category="Revolution & History" data-value="200">200</button></td>
+          <td><button data-category="Famous Quotes" data-value="200">200</button></td>
+          <td><button data-category="Plot Twists & Turns" data-value="200">200</button></td>
+          <td><button data-category="Symbolism & Themes" data-value="200">200</button></td>
+        </tr>
+        <tr>
+          <td><button data-category="Characters of Two Cities" data-value="100">100</button></td>
+          <td><button data-category="Revolution & History" data-value="100">100</button></td>
+          <td><button data-category="Famous Quotes" data-value="100">100</button></td>
+          <td><button data-category="Plot Twists & Turns" data-value="100">100</button></td>
+          <td><button data-category="Symbolism & Themes" data-value="100">100</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <!-- Button to trigger Final Jeopardy (could be auto-triggered after all questions are answered) -->
+    <button id="finalJeopardyBtn">Final Jeopardy</button>
+    <br>
+    <button onclick="showScreen('mainMenu')">Return to Main Menu</button>
+  </div>
+  
+  <!-- ---------- QUESTION MODAL ---------- -->
+  <div id="questionModalOverlay" class="overlay"></div>
+  <div id="questionModal" class="modal">
+    <!-- Question view -->
+    <div id="questionContent">
+      <h2 id="questionText"></h2>
+      <!-- In Daily Double mode, we will later show wager input -->
+      <button id="showAnswerBtn">Next</button>
+    </div>
+    <!-- Answer view (reveals answer and team selection) -->
+    <div id="answerContent" style="display: none;">
+      <p id="answerText"></p>
+      <div id="teamSelectionArea">
+        <p>Select the team that answered:</p>
+        <div id="teamButtonsContainer"></div>
+      </div>
+      <div id="scoreButtonsArea">
+        <button onclick="updateScore(true)">Correct Answer</button>
+        <button onclick="updateScore(false)">Incorrect Answer</button>
+        <button onclick="cancelScoreUpdate()">Cancel</button>
+      </div>
+    </div>
+    <!-- Daily Double wager view -->
+    <div id="dailyDoubleContent" style="display: none;">
+      <h3>Daily Double!</h3>
+      <p>You may wager up to your current score.</p>
+      <input type="number" id="wagerInput" placeholder="Enter your wager">
+      <br>
+      <button onclick="submitWager()">Submit Wager</button>
+      <button onclick="cancelScoreUpdate()">Cancel</button>
+    </div>
+  </div>
+  
+  <!-- ---------- FINAL JEOPARDY MODAL ---------- -->
+  <div id="finalJeopardyModal" class="finalJeopardy">
+    <h2>Final Jeopardy</h2>
+    <p>Teams, please enter your wagers and answers.</p>
+    <!-- For brevity, we simulate a single input and answer reveal -->
+    <div id="finalJeopardyContent">
+      <div id="finalWagers">
+        <p>Enter wagers for each team:</p>
+        <div id="finalWagerInputs"></div>
+      </div>
+      <button onclick="submitFinalJeopardy()">Submit Final Jeopardy</button>
+    </div>
+  </div>
+  
+  <!-- ---------- VICTORY SCREEN ---------- -->
+  <div id="victoryScreen" class="victoryScreen">
+    <h2 id="victoryText"></h2>
+    <button onclick="playAgain()">Play Again</button>
+    <button onclick="showScreen('mainMenu')">Main Menu</button>
+    <button onclick="exitGame()">Exit</button>
+  </div>
+  
+  <script>
+    // Global variables
+    let teams = [];  // Each team: { name, color, score }
+    let currentQuestionButton = null;
+    let selectedTeam = null;
+    let currentWager = 0;
+    
+    // Utility: Show a given screen (mainMenu, setupMenu, gameBoard)
+    function showScreen(screenId) {
+      const screens = ['mainMenu', 'setupMenu', 'gameBoard'];
+      screens.forEach(id => document.getElementById(id).classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+    
+    // Close a modal overlay by ID
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+    
+    // ---------- MAIN MENU EVENT LISTENERS ----------
+    document.getElementById('startGameBtn').addEventListener('click', () => {
+      showScreen('setupMenu');
+    });
+    document.getElementById('instructionsBtn').addEventListener('click', () => {
+      document.getElementById('instructionsModal').style.display = 'block';
+    });
+    document.getElementById('creditsBtn').addEventListener('click', () => {
+      document.getElementById('creditsModal').style.display = 'block';
+    });
+    document.getElementById('exitBtn').addEventListener('click', () => {
+      exitGame();
+    });
+    
+    // ---------- SETUP MENU ----------
+    document.getElementById('teamCount').addEventListener('change', function() {
+      const count = parseInt(this.value);
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById('team' + i + 'Input').style.display = (i <= count) ? 'inline-block' : 'none';
+      }
+    });
+    document.getElementById('continueBtn').addEventListener('click', () => {
+      const teamCount = parseInt(document.getElementById('teamCount').value);
+      teams = [];
+      for (let i = 1; i <= teamCount; i++) {
+        const name = document.getElementById('team' + i + 'Name').value || ('Team ' + i);
+        const color = document.getElementById('team' + i + 'Color').value;
+        teams.push({ name: name, color: color, score: 0 });
+      }
+      updateScoreboard();
+      showScreen('gameBoard');
+    });
+    
+    // Update scoreboard display
+    function updateScoreboard() {
+      const scoreboard = document.getElementById('scoreboard');
+      scoreboard.innerHTML = '<strong>Scoreboard</strong><br>';
+      teams.forEach(team => {
+        scoreboard.innerHTML += `<div style="color: ${team.color}; font-size:1.2em;">${team.name}: ${team.score}</div>`;
+      });
+    }
+    
+    // ---------- GAME BOARD: Attach click events to question buttons ----------
+    const questionButtons = document.querySelectorAll('#gameBoard table button');
+    questionButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        currentQuestionButton = this;
+        const category = this.getAttribute('data-category');
+        const value = this.getAttribute('data-value');
+        // Set question and answer placeholders
+        document.getElementById('questionText').textContent = `Question: ${category} – ${value}`;
+        document.getElementById('answerText').textContent = `Answer: ${category} – ${value}`;
+        // Check if this question is a Daily Double
+        if (this.dataset.dailydouble === "true") {
+          // Add a daily double visual cue
+          document.getElementById('questionModal').classList.add('daily-double');
+          // Show the Daily Double wager view immediately (hide normal question view)
+          document.getElementById('questionContent').style.display = 'none';
+          document.getElementById('dailyDoubleContent').style.display = 'block';
+          document.getElementById('answerContent').style.display = 'none';
+        } else {
+          // Regular question: show question view only
+          document.getElementById('questionContent').style.display = 'block';
+          document.getElementById('answerContent').style.display = 'none';
+          document.getElementById('dailyDoubleContent').style.display = 'none';
+          document.getElementById('questionModal').classList.remove('daily-double');
+        }
+        selectedTeam = null;
+        // Show modal overlay and modal
+        document.getElementById('questionModalOverlay').style.display = 'block';
+        document.getElementById('questionModal').style.display = 'block';
+      });
+    });
+    
+    // ---------- QUESTION MODAL: Next/Show Answer ----------
+    document.getElementById('showAnswerBtn').addEventListener('click', () => {
+      document.getElementById('questionContent').style.display = 'none';
+      document.getElementById('answerContent').style.display = 'block';
+      // Populate team selection buttons
+      const teamContainer = document.getElementById('teamButtonsContainer');
+      teamContainer.innerHTML = '';
+      teams.forEach((team, index) => {
+        let btn = document.createElement('button');
+        btn.textContent = team.name;
+        btn.style.backgroundColor = team.color;
+        btn.onclick = () => { selectTeam(index, btn); };
+        teamContainer.appendChild(btn);
+      });
+    });
+    
+    // ---------- TEAM SELECTION ----------
+    function selectTeam(index, element) {
+      selectedTeam = index;
+      document.querySelectorAll('#teamButtonsContainer button').forEach(btn => btn.classList.remove('selected'));
+      element.classList.add('selected');
+    }
+    
+    // ---------- DAILY DOUBLE: Submit Wager ----------
+    function submitWager() {
+      const wager = parseInt(document.getElementById('wagerInput').value);
+      if (isNaN(wager) || wager < 0) {
+        alert("Please enter a valid wager.");
+        return;
+      }
+      currentWager = wager;
+      // Now reveal the answer and team selection for Daily Double
+      document.getElementById('dailyDoubleContent').style.display = 'none';
+      document.getElementById('answerContent').style.display = 'block';
+      const teamContainer = document.getElementById('teamButtonsContainer');
+      teamContainer.innerHTML = '';
+      teams.forEach((team, index) => {
+        let btn = document.createElement('button');
+        btn.textContent = team.name;
+        btn.style.backgroundColor = team.color;
+        btn.onclick = () => { selectTeam(index, btn); };
+        teamContainer.appendChild(btn);
+      });
+    }
+    
+    // ---------- UPDATE SCORE ----------
+    function updateScore(isCorrect) {
+      if (selectedTeam === null) {
+        alert("Please select a team.");
+        return;
+      }
+      let points = parseInt(currentQuestionButton.getAttribute('data-value'));
+      // Use wager value if Daily Double
+      if (currentQuestionButton.dataset.dailydouble === "true") {
+        points = currentWager;
+      }
+      teams[selectedTeam].score += isCorrect ? points : -points;
+      updateScoreboard();
+      closeQuestionModal();
+    }
+    
+    // Cancel score update
+    function cancelScoreUpdate() {
+      closeQuestionModal();
+    }
+    
+    // Close question modal and disable the answered question button
+    function closeQuestionModal() {
+      document.getElementById('questionModal').style.display = 'none';
+      document.getElementById('questionModalOverlay').style.display = 'none';
+      if (currentQuestionButton) {
+        currentQuestionButton.disabled = true;
+        currentQuestionButton = null;
+      }
+      // Reset wager and modal fields
+      currentWager = 0;
+      document.getElementById('wagerInput').value = "";
+      document.getElementById('questionModal').classList.remove('daily-double');
+    }
+    
+    // ---------- FINAL JEOPARDY ----------
+    document.getElementById('finalJeopardyBtn').addEventListener('click', () => {
+      // Populate wager inputs for each team
+      const container = document.getElementById('finalWagerInputs');
+      container.innerHTML = '';
+      teams.forEach((team, index) => {
+        container.innerHTML += `<div>
+          <label style="font-size:1.2em;">${team.name} (Score: ${team.score}): </label>
+          <input type="number" id="finalWager_${index}" placeholder="Enter wager">
+        </div>`;
+      });
+      document.getElementById('finalJeopardyModal').style.display = 'block';
+    });
+    
+    function submitFinalJeopardy() {
+      // For simplicity, assume all teams answered correctly if their wager is less than or equal to their score.
+      teams.forEach((team, index) => {
+        const wager = parseInt(document.getElementById(`finalWager_${index}`).value) || 0;
+        // In a complete version, you would reveal each team's answer and decide correctness.
+        // Here, we simply add the wager to each team’s score as if they answered correctly.
+        team.score += wager;
+      });
+      updateScoreboard();
+      document.getElementById('finalJeopardyModal').style.display = 'none';
+      // Determine winning team
+      let winner = teams.reduce((prev, curr) => (prev.score > curr.score) ? prev : curr);
+      showVictoryScreen(winner);
+    }
+    
+    // ---------- VICTORY SCREEN ----------
+    function showVictoryScreen(winner) {
+      document.getElementById('victoryText').textContent = `Victory! ${winner.name} wins with ${winner.score} points!`;
+      document.getElementById('victoryScreen').style.display = 'block';
+    }
+    
+    function playAgain() {
+      // Reload the page to restart
+      location.reload();
+    }
+    
+    function exitGame() {
+      // In most browsers, window.close() may not work; alternatively, you can redirect.
+      window.location.href = "about:blank";
+    }
+  </script>
+</body>
+</html>
