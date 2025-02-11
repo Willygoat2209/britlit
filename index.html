@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>A Tale of Two Cities Jeopardy</title>
+  <title>A Tale of Two Cities: Jeopardy</title>
   <!-- Import a classic serif font for a vintage feel -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
   <style>
@@ -92,6 +92,7 @@
       margin: 0 auto;
       border-collapse: collapse;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      table-layout: fixed; /* Ensures all columns have equal width */
     }
     th, td {
       border: 2px solid #8b0000;
@@ -185,9 +186,11 @@
   <div id="instructionsModal" class="overlay" style="display: none;">
     <div class="modal">
       <h2>Instructions</h2>
-      <p>Welcome to Jeopardy themed to <em>A Tale of Two Cities</em>!<br>
+      <p>
+         Welcome to Jeopardy themed to <em>A Tale of Two Cities</em>!<br>
          Click "Start Game" to choose the number of teams and enter team names/colors.<br>
-         Then, select a question from the board. First, the question will be shown. When you click “Next”, the answer will be revealed along with the team selection area. Choose the team that answered and click “Correct Answer” or “Incorrect Answer” to update the score.<br>
+         Then, select a question from the board. First, the question will be shown. When you click “Next”, the answer will be revealed along with the team selection area.<br>
+         Choose the team that answered and click “Correct Answer” or “Incorrect Answer” to update the score.<br>
          Enjoy the game!
       </p>
       <button class="close-btn" onclick="closeModal('instructionsModal')">Close</button>
@@ -198,7 +201,8 @@
   <div id="creditsModal" class="overlay" style="display: none;">
     <div class="modal">
       <h2>Credits</h2>
-      <p>Developed by [Your Name Here].<br>
+      <p>
+         Developed by [Your Name Here].<br>
          Inspired by Charles Dickens' <em>A Tale of Two Cities</em>.
       </p>
       <button class="close-btn" onclick="closeModal('creditsModal')">Close</button>
@@ -243,8 +247,7 @@
     <table>
       <thead>
         <tr>
-          <th>Themes and 
-            Motifs</th>
+          <th>Themes and Motifs</th>
           <th>Symbols</th>
           <th>Setting</th>
           <th>Character</th>
@@ -253,25 +256,24 @@
         </tr>
       </thead>
       <tbody>
-        <!-- Each row represents a point value (from high to low) -->
-        <!-- For simplicity, we assume 500, 400, 300, 200, 100 -->
-        <!-- Row 1: 500 -->
+        <!-- Rows are now ordered from 100 (top) to 500 (bottom) -->
+        <!-- Row 1: 100 -->
         <tr>
-          <td><button data-category="Themes and Motifs" data-value="500">500</button></td>
-          <td><button data-category="Symbols" data-value="500">500</button></td>
-          <td><button data-category="Setting" data-value="500">500</button></td>
-          <td><button data-category="Character" data-value="500">500</button></td>
-          <td><button data-category="References" data-value="500">500</button></td>
-          <td><button data-category="Plot Details" data-value="500">500</button></td>
+          <td><button data-category="Themes and Motifs" data-value="100">100</button></td>
+          <td><button data-category="Symbols" data-value="100">100</button></td>
+          <td><button data-category="Setting" data-value="100">100</button></td>
+          <td><button data-category="Character" data-value="100">100</button></td>
+          <td><button data-category="References" data-value="100">100</button></td>
+          <td><button data-category="Plot Details" data-value="100">100</button></td>
         </tr>
-        <!-- Row 2: 400 -->
+        <!-- Row 2: 200 -->
         <tr>
-          <td><button data-category="Themes and Motifs" data-value="400">400</button></td>
-          <td><button data-category="Symbols" data-value="400">400</button></td>
-          <td><button data-category="Setting" data-value="400">400</button></td>
-          <td><button data-category="Character" data-value="400">400</button></td>
-          <td><button data-category="References" data-value="400">400</button></td>
-          <td><button data-category="Plot Details" data-value="400">400</button></td>
+          <td><button data-category="Themes and Motifs" data-value="200">200</button></td>
+          <td><button data-category="Symbols" data-value="200">200</button></td>
+          <td><button data-category="Setting" data-value="200">200</button></td>
+          <td><button data-category="Character" data-value="200">200</button></td>
+          <td><button data-category="References" data-value="200">200</button></td>
+          <td><button data-category="Plot Details" data-value="200">200</button></td>
         </tr>
         <!-- Row 3: 300 -->
         <tr>
@@ -282,23 +284,23 @@
           <td><button data-category="References" data-value="300">300</button></td>
           <td><button data-category="Plot Details" data-value="300">300</button></td>
         </tr>
-        <!-- Row 4: 200 -->
+        <!-- Row 4: 400 -->
         <tr>
-          <td><button data-category="Themes and Motifs" data-value="200">200</button></td>
-          <td><button data-category="Symbols" data-value="200">200</button></td>
-          <td><button data-category="Setting" data-value="200">200</button></td>
-          <td><button data-category="Character" data-value="200">200</button></td>
-          <td><button data-category="References" data-value="200">200</button></td>
-          <td><button data-category="Plot Details" data-value="200">200</button></td>
+          <td><button data-category="Themes and Motifs" data-value="400">400</button></td>
+          <td><button data-category="Symbols" data-value="400">400</button></td>
+          <td><button data-category="Setting" data-value="400">400</button></td>
+          <td><button data-category="Character" data-value="400">400</button></td>
+          <td><button data-category="References" data-value="400">400</button></td>
+          <td><button data-category="Plot Details" data-value="400">400</button></td>
         </tr>
-        <!-- Row 5: 100 -->
+        <!-- Row 5: 500 -->
         <tr>
-          <td><button data-category="Themes and Motifs" data-value="100">100</button></td>
-          <td><button data-category="Symbols" data-value="100">100</button></td>
-          <td><button data-category="Setting" data-value="100">100</button></td>
-          <td><button data-category="Character" data-value="100">100</button></td>
-          <td><button data-category="References" data-value="100">100</button></td>
-          <td><button data-category="Plot Details" data-value="100">100</button></td>
+          <td><button data-category="Themes and Motifs" data-value="500">500</button></td>
+          <td><button data-category="Symbols" data-value="500">500</button></td>
+          <td><button data-category="Setting" data-value="500">500</button></td>
+          <td><button data-category="Character" data-value="500">500</button></td>
+          <td><button data-category="References" data-value="500">500</button></td>
+          <td><button data-category="Plot Details" data-value="500">500</button></td>
         </tr>
       </tbody>
     </table>
@@ -360,7 +362,15 @@
       document.getElementById('creditsModal').style.display = 'block';
     });
     document.getElementById('exitBtn').addEventListener('click', function() {
-      window.close();
+      window.close(); // Note: window.close() may not work in all browsers.
+    });
+
+    // Allow clicking outside the modal (on the overlay) to close it:
+    document.getElementById('instructionsModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal('instructionsModal');
+    });
+    document.getElementById('creditsModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal('creditsModal');
     });
 
     // Handle team count selection and show/hide team input fields
