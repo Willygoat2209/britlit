@@ -19,8 +19,13 @@
       margin: 20px 0;
       text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
     }
-    .menu, .setup, .board, .modal, .overlay {
+    /* Hide these elements by default */
+    .menu, .setup, .board, .overlay, .modal {
       display: none;
+    }
+    /* This rule ensures that modals inside overlays are displayed when their overlay is shown */
+    .overlay .modal {
+      display: block;
     }
     .active {
       display: block;
