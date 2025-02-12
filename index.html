@@ -1,527 +1,116 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>A Tale of Two Cities: Jeopardy</title>
-  <!-- Import a classic serif font for a vintage feel -->
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    /* Base styles */
-   body {
-  font-family: 'Cinzel', Georgia, serif;
-  background: url('https://www.frenchpaper.com/cdn/shop/products/PARCHTONE_Adged_80C_01_8e43db3a-94a2-4ea9-bc57-d5b30ef9cfb8_1400x.jpg?v=1624540758') no-repeat center center fixed;
-  background-size: cover;
-  background-attachment: fixed;
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  text-align: center;
-  color: #333;
-}
-    
-    h1, h2 {
-      margin: 20px 0;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-    }
-    
-    /* Hide these elements by default */
-    .menu, .setup, .board, .overlay, .modal {
-      display: none;
-    }
-    
-    /* This rule ensures that modals inside overlays are displayed when their overlay is shown */
-    .overlay .modal {
-      display: block;
-    }
-    
-    .active {
-      display: block;
-    }
-    
-    /* Buttons */
-    button {
-      padding: 10px 20px;
-      margin: 10px;
-      font-size: 1em;
-      cursor: pointer;
-      background-color: #963838; /* Dark red */
-      color: #d6d0d0;
-      border: none;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      transition: background-color 0.3s, transform 0.2s;
-    }
-    
-    button:hover {
-      background-color: #a52a2a;
-      transform: translateY(-2px);
-    }
-    
-    button:focus {
-      outline: none;
-    }
-    
-    /* Main Menu styling */
-    #mainMenu {
-      padding-top: 50px;
-      /* Updated background for the main menu */
-      background: url('https://www.frenchpaper.com/cdn/shop/products/PARCHTONE_Adged_80C_01_8e43db3a-94a2-4ea9-bc57-d5b30ef9cfb8_1080x.jpg?v=1624540758') no-repeat center center fixed;
-      background-size: cover;
-    }
-    
-    /* Setup Menu styling */
-    #setupMenu {
-      padding-top: 30px;
-    }
-    
-    .team-input {
-      margin: 10px 0;
-    }
-    
-    .team-input input[type="text"] {
-      padding: 5px;
-      margin-right: 10px;
-      width: 200px;
-      border: 1px solid #8b0000;
-      border-radius: 3px;
-    }
-    
-    .team-input input[type="color"] {
-      border: none;
-      cursor: pointer;
-      width: 40px;
-      height: 30px;
-      vertical-align: middle;
-    }
-    
-    /* Game Board styling */
-    #gameBoard {
-      padding: 20px;
-    }
-    
-    #scoreboard {
-      margin-bottom: 20px;
-      border: 2px solid #8b0000;
-      display: inline-block;
-      padding: 10px 20px;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-    
-    #scoreboard div {
-      margin: 5px;
-      font-weight: bold;
-    }
-    
-    table {
-      width: 90%;
-      margin: 0 auto;
-      border-collapse: collapse;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      table-layout: fixed; /* Ensures all columns have equal width */
-    }
-    
-    th, td {
-      border: 2px solid #8b0000;
-      padding: 10px;
-      text-align: center;
-    }
-    
-    th {
-      background-color: #8b0000;
-      color: #fff;
-      font-size: 1.1em;
-    }
-    
-    td {
-      background-color: #fffaf0;
-    }
-    
-    td button {
-      width: 100%;
-      height: 100%;
-      font-size: 1.1em;
-      background-color: #a65050;
-      border: 1px solid #8b0000;
-      border-radius: 3px;
-      transition: background-color 0.3s;
-    }
-    
-    td button:hover:not(:disabled) {
-      background-color: #e2d8c3;
-    }
-    
-    td button:disabled {
-      background-color: #ccc;
-      cursor: default;
-    }
-    
-    /* Modal styling */
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 1000;
-    }
-    
-    .modal {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      width: 80%;
-      max-width: 500px;
-      background: #fff;
-      padding: 20px;
-      transform: translate(-50%, -50%);
-      border: 3px solid #8b0000;
-      border-radius: 8px;
-      z-index: 1100;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-    
-    .close-btn {
-      margin-top: 20px;
-    }
-    
-    /* Style for selected team button */
-    #teamButtonsContainer button.selected {
-      border: 3px solid #8b0000;
-    }
-    
-    /* Team selection area styling */
-    #teamSelectionArea {
-      margin: 15px 0;
-    }
-    
-    #teamButtonsContainer button {
-      padding: 5px 10px;
-      margin: 5px;
-      cursor: pointer;
-      border: 2px solid #8b0000;
-      border-radius: 4px;
-      transition: transform 0.2s;
-    }
-    
-    #teamButtonsContainer button:hover {
-      transform: scale(1.05);
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Main Menu -->
-  <div id="mainMenu" class="menu active">
-    <h1>A Tale of Two Cities: Jeopardy</h1>
-    <button id="startGameBtn">Start Game</button>
-    <button id="instructionsBtn">Instructions</button>
-    <button id="creditsBtn">Credits</button>
-    <button id="exitBtn">Exit</button>
-  </div>
-
-  <!-- Instructions Modal -->
-  <div id="instructionsModal" class="overlay" style="display: none;">
-    <div class="modal">
-      <h2>Instructions</h2>
-      <p>
-         Welcome to Jeopardy themed to <em>A Tale of Two Cities</em>!<br>
-         Click "Start Game" to choose the number of teams and enter team names/colors.<br>
-         Then, select a question from the board. First, the question will be shown. When you click “Next”, the answer will be revealed along with the team selection area.<br>
-         Choose the team that answered and click “Correct Answer” or “Incorrect Answer” to update the score.<br>
-         Enjoy the game!
-      </p>
-      <button class="close-btn" onclick="closeModal('instructionsModal')">Close</button>
-    </div>
-  </div>
-
-  <!-- Credits Modal -->
-  <div id="creditsModal" class="overlay" style="display: none;">
-    <div class="modal">
-      <h2>Credits</h2>
-      <p>
-         Developed by Will Bradshaw, Meredith Parker, Jada, Caleb.<br>
-         Inspired by Charles Dickens' <em>A Tale of Two Cities</em>.
-      </p>
-      <button class="close-btn" onclick="closeModal('creditsModal')">Close</button>
-    </div>
-  </div>
-
-  <!-- Setup Menu -->
-  <div id="setupMenu" class="setup">
-    <h2>Setup: Choose Number of Teams</h2>
-    <label for="teamCount">Number of Teams:</label>
-    <select id="teamCount">
-      <option value="2">2 Teams</option>
-      <option value="3">3 Teams</option>
-      <option value="4">4 Teams</option>
-    </select>
-    <div id="teamsContainer">
-      <!-- Team input fields will be shown here -->
-      <div class="team-input" id="team1Input">
-        <input type="text" id="team1Name" placeholder="Team 1 Name" value="Team 1">
-        <input type="color" id="team1Color" value="#FF0000">
-      </div>
-      <div class="team-input" id="team2Input">
-        <input type="text" id="team2Name" placeholder="Team 2 Name" value="Team 2">
-        <input type="color" id="team2Color" value="#0000FF">
-      </div>
-      <div class="team-input" id="team3Input" style="display: none;">
-        <input type="text" id="team3Name" placeholder="Team 3 Name" value="Team 3">
-        <input type="color" id="team3Color" value="#008000">
-      </div>
-      <div class="team-input" id="team4Input" style="display: none;">
-        <input type="text" id="team4Name" placeholder="Team 4 Name" value="Team 4">
-        <input type="color" id="team4Color" value="#FFA500">
-      </div>
-    </div>
-    <button id="continueBtn">Continue</button>
-    <button onclick="showScreen('mainMenu')">Back to Main Menu</button>
-  </div>
-
-  <!-- Game Board -->
-  <div id="gameBoard" class="board">
-    <div id="scoreboard"></div>
-    <table>
-      <thead>
-        <tr>
-          <th>Themes and Motifs</th>
-          <th>Symbols</th>
-          <th>Setting</th>
-          <th>Character</th>
-          <th>References</th>
-          <th>Plot Details</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Rows are now ordered from 100 (top) to 500 (bottom) -->
-        <!-- Row 1: 100 -->
-        <tr>
-          <td><button data-category="Themes and Motifs" data-value="100">100</button></td>
-          <td><button data-category="Symbols" data-value="100">100</button></td>
-          <td><button data-category="Setting" data-value="100">100</button></td>
-          <td><button data-category="Character" data-value="100">100</button></td>
-          <td><button data-category="References" data-value="100">100</button></td>
-          <td><button data-category="Plot Details" data-value="100">100</button></td>
-        </tr>
-        <!-- Row 2: 200 -->
-        <tr>
-          <td><button data-category="Themes and Motifs" data-value="200">200</button></td>
-          <td><button data-category="Symbols" data-value="200">200</button></td>
-          <td><button data-category="Setting" data-value="200">200</button></td>
-          <td><button data-category="Character" data-value="200">200</button></td>
-          <td><button data-category="References" data-value="200">200</button></td>
-          <td><button data-category="Plot Details" data-value="200">200</button></td>
-        </tr>
-        <!-- Row 3: 300 -->
-        <tr>
-          <td><button data-category="Themes and Motifs" data-value="300">300</button></td>
-          <td><button data-category="Symbols" data-value="300">300</button></td>
-          <td><button data-category="Setting" data-value="300">300</button></td>
-          <td><button data-category="Character" data-value="300">300</button></td>
-          <td><button data-category="References" data-value="300">300</button></td>
-          <td><button data-category="Plot Details" data-value="300">300</button></td>
-        </tr>
-        <!-- Row 4: 400 -->
-        <tr>
-          <td><button data-category="Themes and Motifs" data-value="400">400</button></td>
-          <td><button data-category="Symbols" data-value="400">400</button></td>
-          <td><button data-category="Setting" data-value="400">400</button></td>
-          <td><button data-category="Character" data-value="400">400</button></td>
-          <td><button data-category="References" data-value="400">400</button></td>
-          <td><button data-category="Plot Details" data-value="400">400</button></td>
-        </tr>
-        <!-- Row 5: 500 -->
-        <tr>
-          <td><button data-category="Themes and Motifs" data-value="500">500</button></td>
-          <td><button data-category="Symbols" data-value="500">500</button></td>
-          <td><button data-category="Setting" data-value="500">500</button></td>
-          <td><button data-category="Character" data-value="500">500</button></td>
-          <td><button data-category="References" data-value="500">500</button></td>
-          <td><button data-category="Plot Details" data-value="500">500</button></td>
-        </tr>
-      </tbody>
-    </table>
-    <br>
-    <button onclick="showScreen('mainMenu')">Return to Main Menu</button>
-  </div>
-
-  <!-- Question Modal (Overlay) -->
-  <div id="questionModalOverlay" class="overlay" style="display: none;"></div>
-  <div id="questionModal" class="modal" style="display: none;">
-    <!-- Question state: shows only the question text and a Next button -->
-    <div id="questionContent">
-      <h2 id="questionText"></h2>
-      <button id="showAnswerBtn">Next</button>
-    </div>
-    <!-- Answer state: reveals the answer plus team selection and score buttons -->
-    <div id="answerContent" style="display: none;">
-      <p id="answerText"></p>
-      <div id="teamSelectionArea">
-        <p>Select the team that answered:</p>
-        <div id="teamButtonsContainer"></div>
-      </div>
-      <div id="scoreButtonsArea">
-        <button onclick="updateScore(true)">Correct Answer</button>
-        <button onclick="updateScore(false)">Incorrect Answer</button>
-        <button onclick="cancelScoreUpdate()">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // Global variables
-    let teams = []; // Array of objects: { name, color, score }
-    let currentQuestionButton = null;
-    let selectedTeam = null;
-
-    // Utility function to show one screen and hide others
-    function showScreen(screenId) {
-      const screens = ['mainMenu', 'setupMenu', 'gameBoard'];
-      screens.forEach(id => {
-        document.getElementById(id).classList.remove('active');
-      });
-      document.getElementById(screenId).classList.add('active');
-    }
-
-    // Close a modal overlay (instructions/credits)
-    function closeModal(modalId) {
-      document.getElementById(modalId).style.display = 'none';
-    }
-
-    // Main Menu Event Listeners
-    document.getElementById('startGameBtn').addEventListener('click', function() {
-      showScreen('setupMenu');
-    });
-    document.getElementById('instructionsBtn').addEventListener('click', function() {
-      document.getElementById('instructionsModal').style.display = 'block';
-    });
-    document.getElementById('creditsBtn').addEventListener('click', function() {
-      document.getElementById('creditsModal').style.display = 'block';
-    });
-    document.getElementById('exitBtn').addEventListener('click', function() {
-      window.close(); // Note: window.close() may not work in all browsers.
-    });
-
-    // Allow clicking outside the modal (on the overlay) to close it:
-    document.getElementById('instructionsModal').addEventListener('click', function(e) {
-      if (e.target === this) closeModal('instructionsModal');
-    });
-    document.getElementById('creditsModal').addEventListener('click', function(e) {
-      if (e.target === this) closeModal('creditsModal');
-    });
-
-    // Handle team count selection and show/hide team input fields
-    document.getElementById('teamCount').addEventListener('change', function() {
-      const count = parseInt(this.value);
-      for (let i = 1; i <= 4; i++) {
-        document.getElementById('team' + i + 'Input').style.display = (i <= count) ? 'block' : 'none';
-      }
-    });
-
-    // When Continue is clicked in Setup Menu
-    document.getElementById('continueBtn').addEventListener('click', function() {
-      const teamCount = parseInt(document.getElementById('teamCount').value);
-      teams = [];
-      for (let i = 1; i <= teamCount; i++) {
-        const name = document.getElementById('team' + i + 'Name').value || ('Team ' + i);
-        const color = document.getElementById('team' + i + 'Color').value;
-        teams.push({ name: name, color: color, score: 0 });
-      }
-      updateScoreboard();
-      showScreen('gameBoard');
-    });
-
-    // Update scoreboard display
-    function updateScoreboard() {
-      const scoreboard = document.getElementById('scoreboard');
-      scoreboard.innerHTML = '<strong>Scoreboard</strong><br>';
-      teams.forEach(team => {
-        scoreboard.innerHTML += `<div style="color: ${team.color}">${team.name}: ${team.score}</div>`;
-      });
-    }
-
-    // Attach click events to all question buttons on the board
-    const questionButtons = document.querySelectorAll('#gameBoard table button');
-    questionButtons.forEach(button => {
-      button.addEventListener('click', function() {
-        currentQuestionButton = this;
-        const category = this.getAttribute('data-category');
-        const value = this.getAttribute('data-value');
-        // Set the question text and answer text (placeholders)
-        document.getElementById('questionText').textContent = `Question: ${category} – ${value}`;
-        document.getElementById('answerText').textContent = `Answer: ${category} – ${value}`;
-        // Reset modal states: show questionContent and hide answerContent
-        document.getElementById('questionContent').style.display = 'block';
-        document.getElementById('answerContent').style.display = 'none';
-        // Reset any previously selected team
-        selectedTeam = null;
-        // Show modal overlay and modal
-        document.getElementById('questionModalOverlay').style.display = 'block';
-        document.getElementById('questionModal').style.display = 'block';
-      });
-    });
-
-    // When "Next" is clicked, show the answer and team selection
-    document.getElementById('showAnswerBtn').addEventListener('click', showAnswer);
-    function showAnswer() {
-      // Hide question view, show answer view
-      document.getElementById('questionContent').style.display = 'none';
-      document.getElementById('answerContent').style.display = 'block';
-      // Populate team selection buttons
-      const teamContainer = document.getElementById('teamButtonsContainer');
-      teamContainer.innerHTML = '';
-      teams.forEach((team, index) => {
-        let btn = document.createElement('button');
-        btn.textContent = team.name;
-        btn.style.backgroundColor = team.color;
-        btn.onclick = function() { selectTeam(index, this); };
-        teamContainer.appendChild(btn);
-      });
-    }
-
-    // Function to handle team selection
-    function selectTeam(index, element) {
-      selectedTeam = index;
-      document.querySelectorAll('#teamButtonsContainer button').forEach(btn => {
-         btn.classList.remove('selected');
-      });
-      element.classList.add('selected');
-    }
-
-    // Update score for the selected team
-    function updateScore(isCorrect) {
-      if (selectedTeam === null) {
-        alert("Please select a team.");
-        return;
-      }
-      let value = parseInt(currentQuestionButton.getAttribute('data-value'));
-      if (isCorrect) {
-        teams[selectedTeam].score += value;
-      } else {
-        teams[selectedTeam].score -= value;
-      }
-      updateScoreboard();
-      closeQuestion();
-    }
-
-    // Cancel score update and close question modal without updating score
-    function cancelScoreUpdate() {
-      closeQuestion();
-    }
-
-    // Close question modal and disable the answered question button
-    function closeQuestion() {
-      document.getElementById('questionModal').style.display = 'none';
-      document.getElementById('questionModalOverlay').style.display = 'none';
-      if (currentQuestionButton) {
-        currentQuestionButton.disabled = true;
-        currentQuestionButton = null;
-      }
-      selectedTeam = null;
-    }
-  </script>
-</body>
-</html>
+<p style="text-align: center;">&nbsp;</p>
+<p>A Tale of Two Cities: Jeopardy</p>
+<!-- Import a classic serif font for a vintage feel -->
+<p></p>
+<!-- Main Menu -->
+<div id="mainMenu" class="menu active">
+<h1>A Tale of Two Cities: Jeopardy</h1>
+<button id="startGameBtn">Start Game</button> <button id="instructionsBtn">Instructions</button> <button id="creditsBtn">Credits</button> <button id="exitBtn">Exit</button></div>
+<div class="menu active"><img src="https://m.media-amazon.com/images/I/71Yt0eDzptL._UF894,1000_QL80_.jpg" alt="" width="240" height="299" /></div>
+<!-- Instructions Modal -->
+<div id="instructionsModal" class="overlay" style="display: none;">
+<div class="modal">
+<h2>Instructions</h2>
+<p>Welcome to Jeopardy themed to <em>A Tale of Two Cities</em>!<br /> Click "Start Game" to choose the number of teams and enter team names/colors.<br /> Then, select a question from the board. First, the question will be shown. When you click &ldquo;Next&rdquo;, the answer will be revealed along with the team selection area.<br /> Choose the team that answered and click &ldquo;Correct Answer&rdquo; or &ldquo;Incorrect Answer&rdquo; to update the score.<br /> Enjoy the game!</p>
+<button class="close-btn">Close</button></div>
+</div>
+<!-- Credits Modal -->
+<div id="creditsModal" class="overlay" style="display: none;">
+<div class="modal">
+<h2>Credits</h2>
+<p>Developed by Will Bradshaw, Meredith Parker, Jada, Caleb.<br /> Inspired by Charles Dickens' <em>A Tale of Two Cities</em>.</p>
+<button class="close-btn">Close</button></div>
+</div>
+<!-- Setup Menu -->
+<div id="setupMenu" class="setup">
+<h2>Setup: Choose Number of Teams</h2>
+<label for="teamCount">Number of Teams:</label><select id="teamCount">
+<option value="2">2 Teams</option>
+<option value="3">3 Teams</option>
+<option value="4">4 Teams</option>
+</select>
+<div id="teamsContainer"><!-- Team input fields will be shown here -->
+<div id="team1Input" class="team-input"><input id="team1Name" type="text" value="Team 1" placeholder="Team 1 Name" /> <input id="team1Color" type="color" value="#FF0000" /></div>
+<div id="team2Input" class="team-input"><input id="team2Name" type="text" value="Team 2" placeholder="Team 2 Name" /> <input id="team2Color" type="color" value="#0000FF" /></div>
+<div id="team3Input" class="team-input" style="display: none;"><input id="team3Name" type="text" value="Team 3" placeholder="Team 3 Name" /> <input id="team3Color" type="color" value="#008000" /></div>
+<div id="team4Input" class="team-input" style="display: none;"><input id="team4Name" type="text" value="Team 4" placeholder="Team 4 Name" /> <input id="team4Color" type="color" value="#FFA500" /></div>
+</div>
+<button id="continueBtn">Continue</button> <button>Back to Main Menu</button></div>
+<!-- Game Board -->
+<div id="gameBoard" class="board">
+<div id="scoreboard">&nbsp;</div>
+<table>
+<thead>
+<tr>
+<th>Themes and Motifs</th>
+<th>Symbols</th>
+<th>Setting</th>
+<th>Character</th>
+<th>References</th>
+<th>Plot Details</th>
+</tr>
+</thead>
+<tbody><!-- Rows are now ordered from 100 (top) to 500 (bottom) --> <!-- Row 1: 100 -->
+<tr>
+<td><button data-category="Themes and Motifs" data-value="100">100</button></td>
+<td><button data-category="Symbols" data-value="100">100</button></td>
+<td><button data-category="Setting" data-value="100">100</button></td>
+<td><button data-category="Character" data-value="100">100</button></td>
+<td><button data-category="References" data-value="100">100</button></td>
+<td><button data-category="Plot Details" data-value="100">100</button></td>
+</tr>
+<!-- Row 2: 200 -->
+<tr>
+<td><button data-category="Themes and Motifs" data-value="200">200</button></td>
+<td><button data-category="Symbols" data-value="200">200</button></td>
+<td><button data-category="Setting" data-value="200">200</button></td>
+<td><button data-category="Character" data-value="200">200</button></td>
+<td><button data-category="References" data-value="200">200</button></td>
+<td><button data-category="Plot Details" data-value="200">200</button></td>
+</tr>
+<!-- Row 3: 300 -->
+<tr>
+<td><button data-category="Themes and Motifs" data-value="300">300</button></td>
+<td><button data-category="Symbols" data-value="300">300</button></td>
+<td><button data-category="Setting" data-value="300">300</button></td>
+<td><button data-category="Character" data-value="300">300</button></td>
+<td><button data-category="References" data-value="300">300</button></td>
+<td><button data-category="Plot Details" data-value="300">300</button></td>
+</tr>
+<!-- Row 4: 400 -->
+<tr>
+<td><button data-category="Themes and Motifs" data-value="400">400</button></td>
+<td><button data-category="Symbols" data-value="400">400</button></td>
+<td><button data-category="Setting" data-value="400">400</button></td>
+<td><button data-category="Character" data-value="400">400</button></td>
+<td><button data-category="References" data-value="400">400</button></td>
+<td><button data-category="Plot Details" data-value="400">400</button></td>
+</tr>
+<!-- Row 5: 500 -->
+<tr>
+<td><button data-category="Themes and Motifs" data-value="500">500</button></td>
+<td><button data-category="Symbols" data-value="500">500</button></td>
+<td><button data-category="Setting" data-value="500">500</button></td>
+<td><button data-category="Character" data-value="500">500</button></td>
+<td><button data-category="References" data-value="500">500</button></td>
+<td><button data-category="Plot Details" data-value="500">500</button></td>
+</tr>
+</tbody>
+</table>
+<br /> <button>Return to Main Menu</button></div>
+<!-- Question Modal (Overlay) -->
+<div id="questionModalOverlay" class="overlay" style="display: none;">&nbsp;</div>
+<div id="questionModal" class="modal" style="display: none;"><!-- Question state: shows only the question text and a Next button -->
+<div id="questionContent">
+<h2 id="questionText">&nbsp;</h2>
+<button id="showAnswerBtn">Next</button></div>
+<!-- Answer state: reveals the answer plus team selection and score buttons -->
+<div id="answerContent" style="display: none;">
+<p id="answerText">&nbsp;</p>
+<div id="teamSelectionArea">
+<p>Select the team that answered:</p>
+<div id="teamButtonsContainer">&nbsp;</div>
+</div>
+<div id="scoreButtonsArea"><button>Correct Answer</button> <button>Incorrect Answer</button> <button>Cancel</button></div>
+</div>
+</div>
