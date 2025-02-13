@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>A Tale of Two Cities: Jeopardy</title>
-  <!-- Import a classic serif font for a vintage feel -->
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    /* Base styles */
+<meta charset="UTF-8" />
+<title></title>
+<!-- Import a classic serif font for a vintage feel -->
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&amp;display=swap" rel="stylesheet" />
+<style type="text/css">/* Base styles */
    body {
   font-family: 'Cinzel', Georgia, serif;
   background: url('https://t4.ftcdn.net/jpg/02/77/27/91/360_F_277279156_3kiEemL1mqy1tRsGtI5W1HHN6VPhI91B.jpg') no-repeat center center fixed;
@@ -209,169 +205,142 @@
     #teamButtonsContainer button:hover {
       transform: scale(1.05);
     }
-  </style>
-</head>
-<body>
+</style>
+<!-- Main Menu -->
+<div class="menu active" id="mainMenu">
+<h1>A Tale of Two Cities: Jeopardy</h1>
 
-  <!-- Main Menu -->
-  <div id="mainMenu" class="menu active">
-    <h1>A Tale of Two Cities: Jeopardy</h1>
-    <button id="startGameBtn">Start Game</button>
-    <button id="instructionsBtn">Instructions</button>
-    <button id="creditsBtn">Credits</button>
-    <button id="exitBtn">Exit</button>
-  </div>
+<p><button id="startGameBtn">Start Game</button><button id="instructionsBtn">Instructions</button><button id="creditsBtn">Credits</button><button id="exitBtn">Exit</button></p>
 
-  <!-- Instructions Modal -->
-  <div id="instructionsModal" class="overlay" style="display: none;">
-    <div class="modal">
-      <h2>Instructions</h2>
-      <p>
-         Welcome to Jeopardy themed to <em>A Tale of Two Cities</em>!<br>
-         Click "Start Game" to choose the number of teams and enter team names/colors.<br>
-         Then, select a question from the board. First, the question will be shown. When you click “Next”, the answer will be revealed along with the team selection area.<br>
-         Choose the team that answered and click “Correct Answer” or “Incorrect Answer” to update the score.<br>
-         Enjoy the game!
-      </p>
-      <button class="close-btn" onclick="closeModal('instructionsModal')">Close</button>
-    </div>
-  </div>
+<p><img alt="" class="left" src="https://m.media-amazon.com/images/I/717BhQWsrWL._AC_UF1000,1000_QL80_.jpg" style="width: 320px; height: 500px;" /><img alt="" class="left" src="https://d28hgpri8am2if.cloudfront.net/book_images/cvr9780743487603_9780743487603_hr.jpg" style="width: 310px; height: 500px;" /><img alt="" class="left" src="https://m.media-amazon.com/images/I/91EirnRPMcL._UF1000,1000_QL80_.jpg" style="width: 328px; height: 500px;" /><img alt="" src="https://18cinemalane.com/wp-content/uploads/2023/06/hallmark-hall-of-fames-a-tale-of-two-cities-poster.jpg" style="width: 352px; height: 500px;" /></p>
+</div>
+<!-- Instructions Modal -->
 
-  <!-- Credits Modal -->
-  <div id="creditsModal" class="overlay" style="display: none;">
-    <div class="modal">
-      <h2>Credits</h2>
-      <p>
-         Developed by Will Bradshaw, Meredith Parker, Jaeda Collett and Caleb Zegar.<br>
-         Inspired by Charles Dickens' <em>A Tale of Two Cities</em>.
-      </p>
-      <button class="close-btn" onclick="closeModal('creditsModal')">Close</button>
-    </div>
-  </div>
+<div class="overlay" id="instructionsModal" style="display: none;">
+<div class="modal">
+<h2>Instructions</h2>
 
-  <!-- Setup Menu -->
-  <div id="setupMenu" class="setup">
-    <h2>Setup: Choose Number of Teams</h2>
-    <label for="teamCount">Number of Teams:</label>
-    <select id="teamCount">
-      <option value="2">2 Teams</option>
-      <option value="3">3 Teams</option>
-      <option value="4">4 Teams</option>
-    </select>
-    <div id="teamsContainer">
-      <!-- Team input fields will be shown here -->
-      <div class="team-input" id="team1Input">
-        <input type="text" id="team1Name" placeholder="Team 1 Name" value="Team 1">
-        <input type="color" id="team1Color" value="#FF0000">
-      </div>
-      <div class="team-input" id="team2Input">
-        <input type="text" id="team2Name" placeholder="Team 2 Name" value="Team 2">
-        <input type="color" id="team2Color" value="#0000FF">
-      </div>
-      <div class="team-input" id="team3Input" style="display: none;">
-        <input type="text" id="team3Name" placeholder="Team 3 Name" value="Team 3">
-        <input type="color" id="team3Color" value="#008000">
-      </div>
-      <div class="team-input" id="team4Input" style="display: none;">
-        <input type="text" id="team4Name" placeholder="Team 4 Name" value="Team 4">
-        <input type="color" id="team4Color" value="#FFA500">
-      </div>
-    </div>
-    <button id="continueBtn">Continue</button>
-    <button onclick="showScreen('mainMenu')">Back to Main Menu</button>
-  </div>
+<p>Welcome to Jeopardy themed to <em>A Tale of Two Cities</em>!<br />
+Click &quot;Start Game&quot; to choose the number of teams and enter team names/colors.<br />
+Then, select a question from the board. First, the question will be shown. When you click &ldquo;Next&rdquo;, the answer will be revealed along with the team selection area.<br />
+Choose the team that answered and click &ldquo;Correct Answer&rdquo; or &ldquo;Incorrect Answer&rdquo; to update the score.<br />
+Enjoy the game!</p>
+<button class="close-btn" onclick="closeModal('instructionsModal')">Close</button></div>
+</div>
+<!-- Credits Modal -->
 
-  <!-- Game Board -->
-  <div id="gameBoard" class="board">
-    <div id="scoreboard"></div>
-    <table>
-      <thead>
-        <tr>
-          <th>Themes and Motifs</th>
-          <th>Symbols</th>
-          <th>Setting</th>
-          <th>Character</th>
-          <th>References</th>
-          <th>Plot Details</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Rows are now ordered from 100 (top) to 500 (bottom) -->
-        <!-- Row 1: 100 -->
-        <tr>
-          <td><button data-category="Themes and Motifs" data-value="100">100</button></td>
-          <td><button data-category="Symbols" data-value="100">100</button></td>
-          <td><button data-category="Setting" data-value="100">100</button></td>
-          <td><button data-category="Character" data-value="100">100</button></td>
-          <td><button data-category="References" data-value="100">100</button></td>
-          <td><button data-category="Plot Details" data-value="100">100</button></td>
-        </tr>
-        <!-- Row 2: 200 -->
-        <tr>
-          <td><button data-category="Themes and Motifs" data-value="200">200</button></td>
-          <td><button data-category="Symbols" data-value="200">200</button></td>
-          <td><button data-category="Setting" data-value="200">200</button></td>
-          <td><button data-category="Character" data-value="200">200</button></td>
-          <td><button data-category="References" data-value="200">200</button></td>
-          <td><button data-category="Plot Details" data-value="200">200</button></td>
-        </tr>
-        <!-- Row 3: 300 -->
-        <tr>
-          <td><button data-category="Themes and Motifs" data-value="300">300</button></td>
-          <td><button data-category="Symbols" data-value="300">300</button></td>
-          <td><button data-category="Setting" data-value="300">300</button></td>
-          <td><button data-category="Character" data-value="300">300</button></td>
-          <td><button data-category="References" data-value="300">300</button></td>
-          <td><button data-category="Plot Details" data-value="300">300</button></td>
-        </tr>
-        <!-- Row 4: 400 -->
-        <tr>
-          <td><button data-category="Themes and Motifs" data-value="400">400</button></td>
-          <td><button data-category="Symbols" data-value="400">400</button></td>
-          <td><button data-category="Setting" data-value="400">400</button></td>
-          <td><button data-category="Character" data-value="400">400</button></td>
-          <td><button data-category="References" data-value="400">400</button></td>
-          <td><button data-category="Plot Details" data-value="400">400</button></td>
-        </tr>
-        <!-- Row 5: 500 -->
-        <tr>
-          <td><button data-category="Themes and Motifs" data-value="500">500</button></td>
-          <td><button data-category="Symbols" data-value="500">500</button></td>
-          <td><button data-category="Setting" data-value="500">500</button></td>
-          <td><button data-category="Character" data-value="500">500</button></td>
-          <td><button data-category="References" data-value="500">500</button></td>
-          <td><button data-category="Plot Details" data-value="500">500</button></td>
-        </tr>
-      </tbody>
-    </table>
-    <br>
-    <button onclick="showScreen('mainMenu')">Return to Main Menu</button>
-  </div>
+<div class="overlay" id="creditsModal" style="display: none;">
+<div class="modal">
+<h2>Credits</h2>
 
-  <!-- Question Modal (Overlay) -->
-  <div id="questionModalOverlay" class="overlay" style="display: none;"></div>
-  <div id="questionModal" class="modal" style="display: none;">
-    <!-- Question state: shows only the question text and a Next button -->
-    <div id="questionContent">
-      <h2 id="questionText"></h2>
-      <button id="showAnswerBtn">Next</button>
-    </div>
-    <!-- Answer state: reveals the answer plus team selection and score buttons -->
-    <div id="answerContent" style="display: none;">
-      <p id="answerText"></p>
-      <div id="teamSelectionArea">
-        <p>Select the team that answered:</p>
-        <div id="teamButtonsContainer"></div>
-      </div>
-      <div id="scoreButtonsArea">
-        <button onclick="updateScore(true)">Correct Answer</button>
-        <button onclick="updateScore(false)">Incorrect Answer</button>
-        <button onclick="cancelScoreUpdate()">Cancel</button>
-      </div>
-    </div>
-  </div>
+<p>Developed by Will Bradshaw, Meredith Parker, Jaeda Collett and Caleb Zegar.<br />
+Inspired by Charles Dickens&#39; <em>A Tale of Two Cities</em>.</p>
+<button class="close-btn" onclick="closeModal('creditsModal')">Close</button></div>
+</div>
+<!-- Setup Menu -->
 
-  <script>
+<div class="setup" id="setupMenu">
+<h2>Setup: Choose Number of Teams</h2>
+<label for="teamCount">Number of Teams:</label> <select id="teamCount"><option value="2">2 Teams</option><option value="3">3 Teams</option><option value="4">4 Teams</option> </select>
+
+<div id="teamsContainer"><!-- Team input fields will be shown here -->
+<div class="team-input" id="team1Input"><input id="team1Name" placeholder="Team 1 Name" type="text" value="Team 1" /> <input id="team1Color" type="color" value="#FF0000" /></div>
+
+<div class="team-input" id="team2Input"><input id="team2Name" placeholder="Team 2 Name" type="text" value="Team 2" /> <input id="team2Color" type="color" value="#0000FF" /></div>
+
+<div class="team-input" id="team3Input" style="display: none;"><input id="team3Name" placeholder="Team 3 Name" type="text" value="Team 3" /> <input id="team3Color" type="color" value="#008000" /></div>
+
+<div class="team-input" id="team4Input" style="display: none;"><input id="team4Name" placeholder="Team 4 Name" type="text" value="Team 4" /> <input id="team4Color" type="color" value="#FFA500" /></div>
+</div>
+<button id="continueBtn">Continue</button><button onclick="showScreen('mainMenu')">Back to Main Menu</button></div>
+<!-- Game Board -->
+
+<div class="board" id="gameBoard">
+<div id="scoreboard">&nbsp;</div>
+
+<table>
+	<thead>
+		<tr>
+			<th>Themes and Motifs</th>
+			<th>Symbols</th>
+			<th>Setting</th>
+			<th>Character</th>
+			<th>References</th>
+			<th>Plot Details</th>
+		</tr>
+	</thead>
+	<tbody><!-- Rows are now ordered from 100 (top) to 500 (bottom) --><!-- Row 1: 100 -->
+		<tr>
+			<td><button data-category="Themes and Motifs" data-value="100">100</button></td>
+			<td><button data-category="Symbols" data-value="100">100</button></td>
+			<td><button data-category="Setting" data-value="100">100</button></td>
+			<td><button data-category="Character" data-value="100">100</button></td>
+			<td><button data-category="References" data-value="100">100</button></td>
+			<td><button data-category="Plot Details" data-value="100">100</button></td>
+		</tr>
+		<!-- Row 2: 200 -->
+		<tr>
+			<td><button data-category="Themes and Motifs" data-value="200">200</button></td>
+			<td><button data-category="Symbols" data-value="200">200</button></td>
+			<td><button data-category="Setting" data-value="200">200</button></td>
+			<td><button data-category="Character" data-value="200">200</button></td>
+			<td><button data-category="References" data-value="200">200</button></td>
+			<td><button data-category="Plot Details" data-value="200">200</button></td>
+		</tr>
+		<!-- Row 3: 300 -->
+		<tr>
+			<td><button data-category="Themes and Motifs" data-value="300">300</button></td>
+			<td><button data-category="Symbols" data-value="300">300</button></td>
+			<td><button data-category="Setting" data-value="300">300</button></td>
+			<td><button data-category="Character" data-value="300">300</button></td>
+			<td><button data-category="References" data-value="300">300</button></td>
+			<td><button data-category="Plot Details" data-value="300">300</button></td>
+		</tr>
+		<!-- Row 4: 400 -->
+		<tr>
+			<td><button data-category="Themes and Motifs" data-value="400">400</button></td>
+			<td><button data-category="Symbols" data-value="400">400</button></td>
+			<td><button data-category="Setting" data-value="400">400</button></td>
+			<td><button data-category="Character" data-value="400">400</button></td>
+			<td><button data-category="References" data-value="400">400</button></td>
+			<td><button data-category="Plot Details" data-value="400">400</button></td>
+		</tr>
+		<!-- Row 5: 500 -->
+		<tr>
+			<td><button data-category="Themes and Motifs" data-value="500">500</button></td>
+			<td><button data-category="Symbols" data-value="500">500</button></td>
+			<td><button data-category="Setting" data-value="500">500</button></td>
+			<td><button data-category="Character" data-value="500">500</button></td>
+			<td><button data-category="References" data-value="500">500</button></td>
+			<td><button data-category="Plot Details" data-value="500">500</button></td>
+		</tr>
+	</tbody>
+</table>
+<br />
+<button onclick="showScreen('mainMenu')">Return to Main Menu</button></div>
+<!-- Question Modal (Overlay) -->
+
+<div class="overlay" id="questionModalOverlay" style="display: none;">&nbsp;</div>
+
+<div class="modal" id="questionModal" style="display: none;"><!-- Question state: shows only the question text and a Next button -->
+<div id="questionContent">
+<h2 id="questionText">&nbsp;</h2>
+<button id="showAnswerBtn">Next</button></div>
+<!-- Answer state: reveals the answer plus team selection and score buttons -->
+
+<div id="answerContent" style="display: none;">
+<p id="answerText">&nbsp;</p>
+
+<div id="teamSelectionArea">
+<p>Select the team that answered:</p>
+
+<div id="teamButtonsContainer">&nbsp;</div>
+</div>
+
+<div id="scoreButtonsArea"><button onclick="updateScore(true)">Correct Answer</button><button onclick="updateScore(false)">Incorrect Answer</button><button onclick="cancelScoreUpdate()">Cancel</button></div>
+</div>
+</div>
+<script>
     // Global variables
     let teams = []; // Array of objects: { name, color, score }
     let currentQuestionButton = null;
@@ -523,5 +492,3 @@
       selectedTeam = null;
     }
   </script>
-</body>
-</html>
